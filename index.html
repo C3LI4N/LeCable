@@ -72,6 +72,158 @@
         white-space: nowrap;
     }
 
+    /* --- FOOTER DISCLAIMER PRO --- */
+.footer-disclaimer {
+    background: rgba(255,255,255,0.02);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 8px 12px 6px 12px;
+    flex-shrink: 0;
+    margin-top: 4px;
+    border-radius: 8px;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    font-size: 9px;
+    color: rgba(255,255,255,0.25);
+    line-height: 1.5;
+    text-align: center;
+}
+
+.footer-main .footer-text {
+    color: rgba(255,255,255,0.3);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+}
+.footer-main .footer-text strong {
+    color: rgba(255,255,255,0.5);
+    font-weight: 500;
+}
+
+.footer-sources {
+    font-size: 8px;
+    color: rgba(255,255,255,0.18);
+}
+.footer-sources .footer-label {
+    color: rgba(255,255,255,0.12);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+}
+.footer-sources .footer-value strong {
+    color: rgba(255,255,255,0.3);
+    font-weight: 500;
+}
+
+.footer-disclaimer-text {
+    font-size: 7.5px;
+    color: rgba(255,255,255,0.12);
+    border-top: 1px solid rgba(255,255,255,0.04);
+    padding-top: 3px;
+    margin-top: 2px;
+    letter-spacing: 0.03em;
+}
+.footer-warning {
+    font-size: 9px;
+    opacity: 0.4;
+}
+
+.footer-credit {
+    font-size: 8px;
+    color: rgba(255,255,255,0.12);
+    padding-top: 2px;
+    gap: 6px;
+}
+.footer-credit .footer-credit-text strong {
+    color: rgba(255,255,255,0.25);
+    font-weight: 500;
+}
+.footer-heart {
+    color: rgba(239, 68, 68, 0.5);
+    display: inline-block;
+    animation: heartbeat 1.5s ease-in-out infinite;
+}
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+.footer-divider {
+    color: rgba(255,255,255,0.05);
+}
+.footer-year, .footer-version {
+    color: rgba(255,255,255,0.08);
+}
+
+.footer-icon {
+    font-size: 11px;
+    opacity: 0.3;
+}
+
+/* Responsive footer */
+@media (max-width: 640px) {
+    .footer-disclaimer {
+        padding: 6px 8px 4px 8px;
+        border-radius: 6px;
+    }
+    .footer-row {
+        font-size: 7px;
+        gap: 2px 4px;
+        line-height: 1.4;
+    }
+    .footer-sources {
+        font-size: 6.5px;
+    }
+    .footer-disclaimer-text {
+        font-size: 6px;
+        padding-top: 2px;
+    }
+    .footer-credit {
+        font-size: 6.5px;
+        gap: 4px;
+    }
+    .footer-icon {
+        font-size: 9px;
+    }
+    .footer-main .footer-text {
+        font-size: 7.5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-disclaimer {
+        padding: 4px 6px 3px 6px;
+    }
+    .footer-row {
+        font-size: 6.5px;
+        gap: 1px 3px;
+    }
+    .footer-sources {
+        font-size: 6px;
+    }
+    .footer-disclaimer-text {
+        font-size: 5.5px;
+    }
+    .footer-credit {
+        font-size: 6px;
+        gap: 3px;
+    }
+    .footer-icon {
+        font-size: 8px;
+    }
+}
+
     /* --- ÉCRAN DE VERROUILLAGE --- */
     #lockScreen {
         position: fixed;
@@ -213,6 +365,13 @@
         .channel-item { padding: 8px 10px; font-size: 12px; }
         .channel-badge { font-size: 6px; padding: 0px 4px; }
         #sidePanel { width: 100% !important; }
+        
+        /* Le lecteur est dézoomé sur mobile pour voir le bouton plein écran */
+        #player-container iframe {
+            transform: scale(0.92);
+            transform-origin: center center;
+            border-radius: 12px !important;
+        }
     }
 
     @media (max-width: 480px) {
@@ -225,6 +384,14 @@
         #lockScreen .pin-dots { gap: 10px; }
         #lockScreen .pin-dot { width: 12px; height: 12px; }
         .channel-item { padding: 6px 8px; font-size: 11px; gap: 4px; }
+        
+        #player-container iframe {
+            transform: scale(0.88);
+        }
+        .footer-disclaimer {
+            font-size: 7px;
+            padding: 4px 0 2px 0;
+        }
     }
 
     @media (max-height: 700px) {
@@ -236,7 +403,6 @@
         #lockScreen .pin-dots { margin-bottom: 16px; }
     }
 
-    /* Pour les très petits écrans en mode paysage */
     @media (max-height: 500px) and (orientation: landscape) {
         #lockScreen { flex-direction: row; flex-wrap: wrap; gap: 12px; padding: 10px 20px; }
         #lockScreen .lock-icon { font-size: 28px; margin: 0; }
@@ -287,10 +453,10 @@
 <!-- ============================================================ -->
 <!-- APPLICATION PRINCIPALE -->
 <!-- ============================================================ -->
-<div id="app" style="display:none; height:100vh; height:100dvh; flex-direction:column; padding:12px 16px; gap:12px;">
+<div id="app" style="display:none; height:100vh; height:100dvh; flex-direction:column; padding:12px 16px 8px 16px; gap:8px;">
 
     <!-- HEADER -->
-    <header class="flex items-center justify-between border-b border-white/10 pb-3 flex-shrink-0">
+    <header class="flex items-center justify-between border-b border-white/10 pb-2 flex-shrink-0">
         <div class="flex items-center gap-4">
             <h1 class="header-title text-sm font-semibold tracking-[0.2em] uppercase text-white">Le<span class="text-gray-400">Câble</span></h1>
             <div id="clock" class="header-clock text-xs font-mono tracking-widest text-gray-400 border-l border-white/10 pl-3">00:00:00</div>
@@ -303,8 +469,8 @@
     </header>
 
     <!-- MAIN VIEWER -->
-    <main class="flex-1 flex gap-4 overflow-hidden min-h-0">
-        <section id="player-container" class="flex-1 relative bg-black rounded-2xl overflow-hidden border border-white/10 flex items-center justify-center">
+    <main class="flex-1 flex gap-4 overflow-hidden min-h-0" style="flex:1 1 auto;">
+        <section id="player-container" class="flex-1 relative bg-black rounded-2xl overflow-hidden border border-white/10 flex items-center justify-center" style="flex:1 1 auto; min-height:0;">
             
             <div id="placeholder" class="flex flex-col items-center justify-center gap-2 opacity-40 text-[10px] tracking-[0.3em] uppercase text-center px-4">
                 <svg class="w-10 h-10 stroke-current" fill="none" viewBox="0 0 24 24">
@@ -315,9 +481,47 @@
                 <span class="text-[8px] text-gray-600">📡 LeCâble</span>
             </div>
 
-            <div id="display-area" class="w-full h-full hidden"></div>
+            <div id="display-area" class="w-full h-full hidden" style="display:none; width:100%; height:100%;">
+                <!-- L'iframe sera injectée ici -->
+            </div>
         </section>
     </main>
+
+    <!-- ============================================================ -->
+<!-- FOOTER DISCLAIMER - VERSION PRO -->
+<!-- ============================================================ -->
+<footer class="footer-disclaimer flex-shrink-0">
+    <div class="footer-content">
+        <div class="footer-row footer-main">
+            <span class="footer-icon">📡</span>
+            <span class="footer-text">
+                LeCâble est un <strong>agrégateur de flux vidéo</strong> qui ne détient ni n'héberge aucun contenu.
+            </span>
+        </div>
+        <div class="footer-row footer-sources">
+            <span class="footer-label">Sources :</span>
+            <span class="footer-value">
+                Tous les flux sont fournis via l'<strong>API publique Northlive</strong> (northlive.lol). 
+                LeCâble se contente d'afficher des <strong>liens externes</strong> et ne possède aucun droit sur les programmes diffusés.
+            </span>
+        </div>
+        <div class="footer-row footer-disclaimer-text">
+            <span class="footer-warning">⚠️</span>
+            <span>
+                Les chaînes de télévision et leur contenu sont la propriété exclusive de leurs détenteurs respectifs. 
+                Ce site n'est pas affilié, approuvé ou sponsorisé par Northlive ou les diffuseurs.
+            </span>
+        </div>
+        <div class="footer-row footer-credit">
+            <span class="footer-divider">•</span>
+            <span class="footer-credit-text">Made with <span class="footer-heart">♥</span> by <strong>C3LI4N</strong></span>
+            <span class="footer-divider">•</span>
+            <span class="footer-year">© 2026</span>
+            <span class="footer-divider">•</span>
+            <span class="footer-version">v1.0</span>
+        </div>
+    </div>
+</footer>
 </div>
 
 <!-- ============================================================ -->
@@ -347,9 +551,6 @@
 <script>
 // ============================================================
 // 1. HASH DU CODE PIN (SHA-256 du "1081")
-//    Généré avec la console : 
-//    crypto.subtle.digest('SHA-256', new TextEncoder().encode('1081'))
-//    puis converti en hex.
 // ============================================================
 const PIN_HASH = 'e18037f42fd038fa9b51c6234fa4f332fa681c14653c9852fdf9a0a501bbac24';
 
@@ -406,13 +607,10 @@ function handlePinInput(value) {
         const code = pinEntry.join('');
         checkPin(code).then(isValid => {
             if (isValid) {
-                // ✅ Code correct
                 document.getElementById('lockScreen').classList.add('hidden');
                 document.getElementById('app').style.display = 'flex';
-                // Lancer le chargement des chaînes
                 initApp();
             } else {
-                // ❌ Code incorrect
                 showError();
                 pinEntry = [];
                 setTimeout(updateDots, 500);
@@ -426,22 +624,19 @@ document.querySelectorAll('.pin-btn[data-value]').forEach(btn => {
     btn.addEventListener('click', () => {
         handlePinInput(btn.dataset.value);
     });
-    // Support tactile
     btn.addEventListener('touchstart', (e) => {
         e.preventDefault();
         handlePinInput(btn.dataset.value);
     });
 });
 
-// Support clavier physique
+// Support clavier
 document.addEventListener('keydown', (e) => {
     if (document.getElementById('lockScreen').classList.contains('hidden')) return;
     if (e.key >= '0' && e.key <= '9') {
         handlePinInput(e.key);
     } else if (e.key === 'Backspace') {
         handlePinInput('delete');
-    } else if (e.key === 'Enter') {
-        // Ne fait rien, le code se vérifie automatiquement à 4 chiffres
     }
 });
 
@@ -449,7 +644,6 @@ document.addEventListener('keydown', (e) => {
 // 3. DONNÉES DES CHAÎNES
 // ============================================================
 // ⚠️ COPIEZ ICI VOTRE JSON COMPLET AVEC LES 968 CHAÎNES ⚠️
-// (Le fichier "chaines tv northlive.txt" que vous avez récupéré)
 const FULL_DATA = {
   "success": true,
   "count": 968,
@@ -9204,12 +9398,14 @@ function loadChannel(channel) {
     const placeholder = document.getElementById('placeholder');
     
     placeholder.classList.add('hidden');
-    container.classList.remove('hidden');
+    container.style.display = 'block';
     document.getElementById('placeholder-text').textContent = channel.name;
     
     const frame = document.createElement('iframe');
     frame.src = channel.player_url;
     frame.className = "w-full h-full rounded-xl border-0 bg-black";
+    frame.style.width = "100%";
+    frame.style.height = "100%";
     frame.setAttribute("allowfullscreen", "true");
     frame.setAttribute("allow", "autoplay; fullscreen; picture-in-picture; encrypted-media");
     frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-presentation");
@@ -9230,7 +9426,7 @@ function resetPlayer() {
     const placeholder = document.getElementById('placeholder');
     
     container.innerHTML = '';
-    container.classList.add('hidden');
+    container.style.display = 'none';
     placeholder.classList.remove('hidden');
     document.getElementById('placeholder-text').textContent = 'Sélectionnez une chaîne';
     currentChannel = null;
@@ -9345,7 +9541,6 @@ function initApp() {
     allChannels = getFrenchChannels(FULL_DATA);
     renderChannels();
     
-    // Charge une chaîne si passée en paramètre URL
     const urlParams = new URLSearchParams(window.location.search);
     const slug = urlParams.get('channel');
     if (slug) {
@@ -9365,11 +9560,6 @@ document.addEventListener('keydown', (e) => {
         }
     }
 });
-
-// ============================================================
-// 7. INITIALISATION
-// ============================================================
-// Le PIN est déjà affiché, l'app ne se lance qu'après validation
 </script>
 
 </body>
