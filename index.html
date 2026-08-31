@@ -2,48 +2,60 @@
 <html lang="fr" class="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PlayVideo - Northlive TV France</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LeCâble - TV Française</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap');
+    
+    * { box-sizing: border-box; }
     
     body { 
         font-family: 'Geist', sans-serif; 
         background: #0f1115; 
         color: #f3f4f6; 
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow: hidden;
     }
 
     .glass-btn {
         background: rgba(255, 255, 255, 0.08);
         backdrop-filter: blur(8px);
         border: 1px solid rgba(255, 255, 255, 0.15);
+        transition: all 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
     }
-    .glass-btn:hover {
+    .glass-btn:hover, .glass-btn:active {
         background: rgba(255, 255, 255, 0.18);
         border-color: rgba(255, 255, 255, 0.3);
     }
     
     .channels-list::-webkit-scrollbar {
-        width: 4px;
+        width: 3px;
     }
     .channels-list::-webkit-scrollbar-track {
-        background: rgba(255,255,255,0.05);
+        background: rgba(255,255,255,0.03);
         border-radius: 10px;
     }
     .channels-list::-webkit-scrollbar-thumb {
-        background: rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.15);
         border-radius: 10px;
     }
     
     .channel-item {
-        transition: all 0.2s ease;
+        transition: all 0.15s ease;
         cursor: pointer;
         border-left: 3px solid transparent;
+        -webkit-tap-highlight-color: transparent;
     }
     .channel-item:hover {
         background: rgba(255,255,255,0.06);
         border-left-color: #3b82f6;
+    }
+    .channel-item:active {
+        background: rgba(255,255,255,0.1);
+        transform: scale(0.98);
     }
     .channel-item.active {
         background: rgba(59, 130, 246, 0.15);
@@ -51,74 +63,394 @@
     }
     
     .channel-badge {
-        font-size: 8px;
-        padding: 1px 6px;
+        font-size: 7px;
+        padding: 1px 5px;
         border-radius: 10px;
         text-transform: uppercase;
         font-weight: 600;
         letter-spacing: 0.05em;
+        white-space: nowrap;
+    }
+
+    /* --- ÉCRAN DE VERROUILLAGE --- */
+    #lockScreen {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: #0f1115;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    #lockScreen.hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(1.05);
+    }
+    #lockScreen .lock-icon {
+        font-size: 56px;
+        margin-bottom: 16px;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.08); opacity: 1; }
+    }
+    #lockScreen h1 {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        background: linear-gradient(135deg, #f3f4f6 0%, #9ca3af 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 4px;
+    }
+    #lockScreen .sub {
+        color: #6b7280;
+        font-size: 13px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        margin-bottom: 28px;
+    }
+    #lockScreen .pin-dots {
+        display: flex;
+        gap: 14px;
+        margin-bottom: 32px;
+    }
+    #lockScreen .pin-dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.08);
+        border: 2px solid rgba(255,255,255,0.06);
+        transition: all 0.2s ease;
+    }
+    #lockScreen .pin-dot.filled {
+        background: #3b82f6;
+        border-color: #3b82f6;
+        box-shadow: 0 0 20px rgba(59,130,246,0.3);
+    }
+    #lockScreen .pin-dot.error {
+        background: #ef4444;
+        border-color: #ef4444;
+        animation: shake 0.4s ease;
+    }
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        75% { transform: translateX(10px); }
+    }
+    #lockScreen .pin-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        max-width: 280px;
+        width: 100%;
+    }
+    #lockScreen .pin-btn {
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: #f3f4f6;
+        font-size: 24px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        -webkit-tap-highlight-color: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: inherit;
+        user-select: none;
+    }
+    #lockScreen .pin-btn:hover {
+        background: rgba(255,255,255,0.12);
+        border-color: rgba(255,255,255,0.2);
+    }
+    #lockScreen .pin-btn:active {
+        transform: scale(0.92);
+        background: rgba(59,130,246,0.2);
+    }
+    #lockScreen .pin-btn.empty {
+        background: transparent;
+        border: none;
+        cursor: default;
+        pointer-events: none;
+    }
+    #lockScreen .pin-btn .delete-icon {
+        font-size: 20px;
+        opacity: 0.5;
+    }
+    #lockScreen .pin-btn .delete-icon:hover {
+        opacity: 1;
+    }
+    #lockScreen .error-msg {
+        color: #ef4444;
+        font-size: 13px;
+        height: 24px;
+        margin-top: 16px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    #lockScreen .error-msg.show {
+        opacity: 1;
+    }
+
+    /* --- RESPONSIVE --- */
+    @media (max-width: 768px) {
+        body { padding: 8px; }
+        .header-title { font-size: 14px; }
+        .header-clock { font-size: 10px; padding-left: 8px; }
+        .header-btn { font-size: 10px; padding: 6px 12px; }
+        #lockScreen .lock-icon { font-size: 40px; }
+        #lockScreen h1 { font-size: 22px; }
+        #lockScreen .pin-grid { gap: 10px; max-width: 240px; }
+        #lockScreen .pin-btn { font-size: 20px; }
+        .channel-item { padding: 8px 10px; font-size: 12px; }
+        .channel-badge { font-size: 6px; padding: 0px 4px; }
+        #sidePanel { width: 100% !important; }
+    }
+
+    @media (max-width: 480px) {
+        body { padding: 4px; }
+        .header-title { font-size: 12px; }
+        .header-clock { display: none; }
+        .header-btn { font-size: 9px; padding: 4px 10px; }
+        #lockScreen .pin-grid { gap: 8px; max-width: 200px; }
+        #lockScreen .pin-btn { font-size: 18px; }
+        #lockScreen .pin-dots { gap: 10px; }
+        #lockScreen .pin-dot { width: 12px; height: 12px; }
+        .channel-item { padding: 6px 8px; font-size: 11px; gap: 4px; }
+    }
+
+    @media (max-height: 700px) {
+        #lockScreen .lock-icon { font-size: 32px; margin-bottom: 8px; }
+        #lockScreen h1 { font-size: 20px; }
+        #lockScreen .sub { font-size: 11px; margin-bottom: 16px; }
+        #lockScreen .pin-grid { gap: 8px; max-width: 200px; }
+        #lockScreen .pin-btn { font-size: 18px; }
+        #lockScreen .pin-dots { margin-bottom: 16px; }
+    }
+
+    /* Pour les très petits écrans en mode paysage */
+    @media (max-height: 500px) and (orientation: landscape) {
+        #lockScreen { flex-direction: row; flex-wrap: wrap; gap: 12px; padding: 10px 20px; }
+        #lockScreen .lock-icon { font-size: 28px; margin: 0; }
+        #lockScreen h1 { font-size: 18px; margin: 0; }
+        #lockScreen .sub { display: none; }
+        #lockScreen .pin-dots { margin: 0 12px; }
+        #lockScreen .pin-grid { max-width: 160px; gap: 6px; }
+        #lockScreen .pin-btn { font-size: 14px; }
+        #lockScreen .error-msg { margin-top: 4px; height: 16px; font-size: 11px; }
     }
 </style>
 </head>
-<body class="h-screen flex flex-col p-4 md:p-8 gap-6">
+<body>
+
+<!-- ============================================================ -->
+<!-- ÉCRAN DE VERROUILLAGE -->
+<!-- ============================================================ -->
+<div id="lockScreen">
+    <div class="lock-icon">📡</div>
+    <h1>LeCâble</h1>
+    <div class="sub">🔒 Accès sécurisé</div>
+
+    <div class="pin-dots" id="pinDots">
+        <div class="pin-dot" data-index="0"></div>
+        <div class="pin-dot" data-index="1"></div>
+        <div class="pin-dot" data-index="2"></div>
+        <div class="pin-dot" data-index="3"></div>
+    </div>
+
+    <div class="pin-grid" id="pinGrid">
+        <button class="pin-btn" data-value="1">1</button>
+        <button class="pin-btn" data-value="2">2</button>
+        <button class="pin-btn" data-value="3">3</button>
+        <button class="pin-btn" data-value="4">4</button>
+        <button class="pin-btn" data-value="5">5</button>
+        <button class="pin-btn" data-value="6">6</button>
+        <button class="pin-btn" data-value="7">7</button>
+        <button class="pin-btn" data-value="8">8</button>
+        <button class="pin-btn" data-value="9">9</button>
+        <button class="pin-btn empty"></button>
+        <button class="pin-btn" data-value="0">0</button>
+        <button class="pin-btn" data-value="delete"><span class="delete-icon">⌫</span></button>
+    </div>
+
+    <div class="error-msg" id="errorMsg">Code incorrect</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- APPLICATION PRINCIPALE -->
+<!-- ============================================================ -->
+<div id="app" style="display:none; height:100vh; height:100dvh; flex-direction:column; padding:12px 16px; gap:12px;">
 
     <!-- HEADER -->
-    <header class="flex items-center justify-between border-b border-white/10 pb-4">
-        <div class="flex items-center gap-6">
-            <h1 class="text-sm font-semibold tracking-[0.2em] uppercase text-white">Play<span class="text-gray-400">Video</span></h1>
-            <div id="clock" class="text-xs font-mono tracking-widest text-gray-400 border-l border-white/10 pl-4">00:00:00</div>
+    <header class="flex items-center justify-between border-b border-white/10 pb-3 flex-shrink-0">
+        <div class="flex items-center gap-4">
+            <h1 class="header-title text-sm font-semibold tracking-[0.2em] uppercase text-white">Le<span class="text-gray-400">Câble</span></h1>
+            <div id="clock" class="header-clock text-xs font-mono tracking-widest text-gray-400 border-l border-white/10 pl-3">00:00:00</div>
         </div>
-        <div class="flex items-center gap-3">
-            <span id="channel-counter" class="text-xs text-gray-500">0 chaînes</span>
-            <button onclick="resetPlayer()" class="glass-btn px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase text-red-400 hover:text-red-300 transition">Reset</button>
-            <button onclick="togglePanel()" class="glass-btn px-5 py-2 rounded-full text-xs font-medium tracking-wider uppercase text-gray-200 transition">📺 Chaînes</button>
+        <div class="flex items-center gap-2">
+            <span id="channel-counter" class="text-[10px] text-gray-500 hidden sm:inline">0</span>
+            <button onclick="resetPlayer()" class="header-btn glass-btn px-3 py-1.5 rounded-full text-[10px] font-medium tracking-wider uppercase text-red-400 hover:text-red-300 transition">Reset</button>
+            <button onclick="togglePanel()" class="header-btn glass-btn px-4 py-1.5 rounded-full text-[10px] font-medium tracking-wider uppercase text-gray-200 transition">📺</button>
         </div>
     </header>
 
     <!-- MAIN VIEWER -->
-    <main class="flex-1 flex gap-6 overflow-hidden">
-        <section id="player-container" class="flex-1 relative bg-black rounded-2xl overflow-hidden border border-white/10 flex items-center justify-center p-2">
+    <main class="flex-1 flex gap-4 overflow-hidden min-h-0">
+        <section id="player-container" class="flex-1 relative bg-black rounded-2xl overflow-hidden border border-white/10 flex items-center justify-center">
             
-            <div id="placeholder" class="flex flex-col items-center justify-center gap-3 opacity-40 text-xs tracking-[0.3em] uppercase">
-                <svg class="w-12 h-12 stroke-current" fill="none" viewBox="0 0 24 24">
+            <div id="placeholder" class="flex flex-col items-center justify-center gap-2 opacity-40 text-[10px] tracking-[0.3em] uppercase text-center px-4">
+                <svg class="w-10 h-10 stroke-current" fill="none" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                <span id="placeholder-text">Sélectionnez une chaîne française</span>
+                <span id="placeholder-text">Sélectionnez une chaîne</span>
+                <span class="text-[8px] text-gray-600">📡 LeCâble</span>
             </div>
 
             <div id="display-area" class="w-full h-full hidden"></div>
         </section>
     </main>
+</div>
 
-    <!-- SLIDE PANEL -->
-    <div id="sidePanel" class="fixed inset-y-0 right-0 w-full md:w-96 bg-[#14161d]/95 backdrop-blur-xl border-l border-white/10 p-4 transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
-        <div class="flex justify-between items-center mb-4 px-2">
-            <h2 class="text-xs uppercase tracking-widest font-semibold text-gray-300">🇫🇷 Chaînes françaises</h2>
-            <button onclick="togglePanel()" class="text-gray-400 hover:text-white transition">✕</button>
-        </div>
-        
-        <div class="px-2 mb-3">
-            <input type="text" id="searchInput" placeholder="Rechercher une chaîne..." 
-                   class="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-2 text-sm text-gray-200 focus:outline-none focus:border-blue-500/50 transition" 
-                   oninput="filterChannels(this.value)">
-        </div>
-        
-        <div id="channelsList" class="flex-1 overflow-y-auto channels-list space-y-1 px-1">
-            <!-- Rempli dynamiquement -->
-        </div>
-        
-        <div class="text-[10px] text-gray-500 uppercase tracking-widest text-center mt-2 pt-2 border-t border-white/5">
-            🇫🇷 Northlive TV France • <span id="total-french-channels">0</span> chaînes
-        </div>
+<!-- ============================================================ -->
+<!-- SLIDE PANEL -->
+<!-- ============================================================ -->
+<div id="sidePanel" class="fixed inset-y-0 right-0 w-full max-w-sm bg-[#14161d]/98 backdrop-blur-xl border-l border-white/10 p-3 transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
+    <div class="flex justify-between items-center mb-3 px-1 flex-shrink-0">
+        <h2 class="text-[11px] uppercase tracking-widest font-semibold text-gray-300">📺 Chaînes FR</h2>
+        <button onclick="togglePanel()" class="text-gray-400 hover:text-white transition text-lg leading-none">✕</button>
     </div>
+    
+    <div class="px-1 mb-2 flex-shrink-0">
+        <input type="text" id="searchInput" placeholder="Rechercher..." 
+               class="w-full bg-black/30 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-blue-500/50 transition placeholder:text-gray-500" 
+               oninput="filterChannels(this.value)">
+    </div>
+    
+    <div id="channelsList" class="flex-1 overflow-y-auto channels-list space-y-0.5 px-0.5">
+        <!-- Rempli dynamiquement -->
+    </div>
+    
+    <div class="text-[9px] text-gray-500 uppercase tracking-widest text-center mt-2 pt-2 border-t border-white/5 flex-shrink-0">
+        <span id="total-french-channels">0</span> chaînes • LeCâble
+    </div>
+</div>
 
-    <script>
-        // ============================================================
-        // 1. DONNÉES - Avec TOUTES les chaînes (copiez votre JSON ici)
-        //    ou importez-le depuis un fichier externe.
-        // ============================================================
-        const FULL_DATA = {
+<script>
+// ============================================================
+// 1. HASH DU CODE PIN (SHA-256 du "1081")
+//    Généré avec la console : 
+//    crypto.subtle.digest('SHA-256', new TextEncoder().encode('1081'))
+//    puis converti en hex.
+// ============================================================
+const PIN_HASH = 'e18037f42fd038fa9b51c6234fa4f332fa681c14653c9852fdf9a0a501bbac24';
+
+// ============================================================
+// 2. GESTION DU PIN
+// ============================================================
+let pinEntry = [];
+
+async function hashPin(input) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(input);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function checkPin(input) {
+    const hashed = await hashPin(input);
+    return hashed === PIN_HASH;
+}
+
+function updateDots() {
+    document.querySelectorAll('.pin-dot').forEach((dot, i) => {
+        dot.classList.toggle('filled', i < pinEntry.length);
+        dot.classList.remove('error');
+    });
+}
+
+function showError() {
+    const dots = document.querySelectorAll('.pin-dot');
+    dots.forEach(d => d.classList.add('error'));
+    document.getElementById('errorMsg').classList.add('show');
+    setTimeout(() => {
+        dots.forEach(d => d.classList.remove('error'));
+        document.getElementById('errorMsg').classList.remove('show');
+    }, 600);
+}
+
+function handlePinInput(value) {
+    const errorMsg = document.getElementById('errorMsg');
+    errorMsg.classList.remove('show');
+    
+    if (value === 'delete') {
+        pinEntry.pop();
+        updateDots();
+        return;
+    }
+    
+    if (pinEntry.length >= 4) return;
+    pinEntry.push(value);
+    updateDots();
+    
+    if (pinEntry.length === 4) {
+        const code = pinEntry.join('');
+        checkPin(code).then(isValid => {
+            if (isValid) {
+                // ✅ Code correct
+                document.getElementById('lockScreen').classList.add('hidden');
+                document.getElementById('app').style.display = 'flex';
+                // Lancer le chargement des chaînes
+                initApp();
+            } else {
+                // ❌ Code incorrect
+                showError();
+                pinEntry = [];
+                setTimeout(updateDots, 500);
+            }
+        });
+    }
+}
+
+// Setup des boutons PIN
+document.querySelectorAll('.pin-btn[data-value]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        handlePinInput(btn.dataset.value);
+    });
+    // Support tactile
+    btn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        handlePinInput(btn.dataset.value);
+    });
+});
+
+// Support clavier physique
+document.addEventListener('keydown', (e) => {
+    if (document.getElementById('lockScreen').classList.contains('hidden')) return;
+    if (e.key >= '0' && e.key <= '9') {
+        handlePinInput(e.key);
+    } else if (e.key === 'Backspace') {
+        handlePinInput('delete');
+    } else if (e.key === 'Enter') {
+        // Ne fait rien, le code se vérifie automatiquement à 4 chiffres
+    }
+});
+
+// ============================================================
+// 3. DONNÉES DES CHAÎNES
+// ============================================================
+// ⚠️ COPIEZ ICI VOTRE JSON COMPLET AVEC LES 968 CHAÎNES ⚠️
+// (Le fichier "chaines tv northlive.txt" que vous avez récupéré)
+const FULL_DATA = {
   "success": true,
   "count": 968,
   "usage": "Toutes les chaînes Northlive TV",
@@ -8836,213 +9168,209 @@
       "player_url": "https://northlive.lol/api/v1/index.php?route=tv/vox-kongo-tv-cd/player&api_key=ff_5ae9661d6220e612a00645cb2889d6da5231504cbb68cc32214030b1a783e8e3"
     }
   ]
-        };
+};
 
-        // ============================================================
-        // 2. FILTRER UNIQUEMENT LES CHAÎNES FRANÇAISES
-        // ============================================================
-        function getFrenchChannels(data) {
-            // Garder uniquement les chaînes avec country === "France"
-            // (et on exclut celles qui ont "France" suivi d'autre chose comme "France GF", "France GP", etc.)
-            return data.data.filter(channel => 
-                channel.country === "France" && channel.active !== false
-            );
-        }
+// ============================================================
+// 4. FILTRER LES CHAÎNES FRANÇAISES
+// ============================================================
+function getFrenchChannels(data) {
+    return (data.data || []).filter(channel => 
+        channel.country === "France" && channel.active !== false
+    );
+}
 
-        // Appliquer le filtre
-        let allChannels = getFrenchChannels(FULL_DATA);
-        console.log(`📺 ${allChannels.length} chaînes françaises trouvées sur ${FULL_DATA.count} au total.`);
+let allChannels = [];
 
-        // ============================================================
-        // 3. ÉTAT DE L'APPLICATION
-        // ============================================================
-        let currentChannel = null;
+// ============================================================
+// 5. FONCTIONS DE L'APPLICATION
+// ============================================================
+let currentChannel = null;
 
-        // ============================================================
-        // 4. FONCTIONS
-        // ============================================================
+// Horloge
+setInterval(() => {
+    const clock = document.getElementById('clock');
+    if (clock) clock.textContent = new Date().toLocaleTimeString('fr-FR');
+}, 1000);
+
+function togglePanel() {
+    document.getElementById('sidePanel').classList.toggle('translate-x-full');
+}
+
+function loadChannel(channel) {
+    if (!channel || !channel.player_url) return;
+    
+    currentChannel = channel;
+    const container = document.getElementById('display-area');
+    const placeholder = document.getElementById('placeholder');
+    
+    placeholder.classList.add('hidden');
+    container.classList.remove('hidden');
+    document.getElementById('placeholder-text').textContent = channel.name;
+    
+    const frame = document.createElement('iframe');
+    frame.src = channel.player_url;
+    frame.className = "w-full h-full rounded-xl border-0 bg-black";
+    frame.setAttribute("allowfullscreen", "true");
+    frame.setAttribute("allow", "autoplay; fullscreen; picture-in-picture; encrypted-media");
+    frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-presentation");
+    frame.setAttribute("loading", "lazy");
+    
+    container.innerHTML = "";
+    container.appendChild(frame);
+    
+    updateActiveChannel(channel.slug);
+    
+    if (window.innerWidth < 768) {
+        togglePanel();
+    }
+}
+
+function resetPlayer() {
+    const container = document.getElementById('display-area');
+    const placeholder = document.getElementById('placeholder');
+    
+    container.innerHTML = '';
+    container.classList.add('hidden');
+    placeholder.classList.remove('hidden');
+    document.getElementById('placeholder-text').textContent = 'Sélectionnez une chaîne';
+    currentChannel = null;
+    document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
+}
+
+function updateActiveChannel(slug) {
+    document.querySelectorAll('.channel-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.slug === slug);
+    });
+}
+
+function filterChannels(query) {
+    const q = query.toLowerCase().trim();
+    const items = document.querySelectorAll('.channel-item');
+    let visible = 0;
+    
+    items.forEach(item => {
+        const name = item.dataset.name.toLowerCase();
+        const category = (item.dataset.category || '').toLowerCase();
+        const match = name.includes(q) || category.includes(q);
+        item.style.display = match ? 'flex' : 'none';
+        if (match) visible++;
+    });
+    
+    document.getElementById('channel-counter').textContent = visible;
+}
+
+function getCategoryBadge(category) {
+    const badges = {
+        'IPTV': 'bg-gray-600/30 text-gray-300',
+        'Sport': 'bg-green-600/30 text-green-400',
+        'Info': 'bg-blue-600/30 text-blue-400',
+        'Divertissement': 'bg-purple-600/30 text-purple-400',
+        'Cinéma': 'bg-red-600/30 text-red-400',
+        'Séries-Films': 'bg-pink-600/30 text-pink-400',
+        'Documentaires': 'bg-orange-600/30 text-orange-400',
+        'Jeunesse': 'bg-yellow-600/30 text-yellow-400',
+        'Musique': 'bg-indigo-600/30 text-indigo-400',
+        'Culture': 'bg-teal-600/30 text-teal-400',
+        'Art de vivre': 'bg-emerald-600/30 text-emerald-400',
+        'Régional': 'bg-cyan-600/30 text-cyan-400',
+        'Local': 'bg-sky-600/30 text-sky-400',
+        'Nature': 'bg-lime-600/30 text-lime-400',
+        'Reportages': 'bg-amber-600/30 text-amber-400',
+        'Voyage': 'bg-fuchsia-600/30 text-fuchsia-400',
+        'Sociétal': 'bg-rose-600/30 text-rose-400',
+        'Economie': 'bg-slate-600/30 text-slate-400',
+        'Archives': 'bg-zinc-600/30 text-zinc-400',
+        'Sciences': 'bg-cyan-700/30 text-cyan-300'
+    };
+    return badges[category] || 'bg-gray-700/30 text-gray-400';
+}
+
+function renderChannels() {
+    const list = document.getElementById('channelsList');
+    list.innerHTML = '';
+    
+    const sorted = [...allChannels].sort((a, b) => {
+        const aHD = a.name.includes('HD') || a.name.includes('FHD');
+        const bHD = b.name.includes('HD') || b.name.includes('FHD');
+        if (aHD && !bHD) return -1;
+        if (!aHD && bHD) return 1;
+        return a.name.localeCompare(b.name);
+    });
+    
+    sorted.forEach((channel, index) => {
+        const div = document.createElement('div');
+        div.className = 'channel-item flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs';
+        div.dataset.slug = channel.slug;
+        div.dataset.name = channel.name;
+        div.dataset.category = channel.category || '';
         
-        // Horloge
-        setInterval(() => {
-            document.getElementById('clock').textContent = new Date().toLocaleTimeString('fr-FR');
-        }, 1000);
-
-        function togglePanel() {
-            document.getElementById('sidePanel').classList.toggle('translate-x-full');
+        const num = document.createElement('span');
+        num.className = 'text-[9px] text-gray-500 w-4 text-right flex-shrink-0';
+        num.textContent = index + 1;
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'flex-1 truncate text-[11px]';
+        nameSpan.textContent = channel.name;
+        
+        const badges = document.createElement('span');
+        badges.className = 'flex items-center gap-0.5 flex-shrink-0';
+        
+        if (channel.name.includes('HD') || channel.name.includes('FHD')) {
+            const hd = document.createElement('span');
+            hd.className = 'channel-badge bg-blue-500/20 text-blue-400';
+            hd.textContent = channel.name.includes('FHD') ? 'FHD' : 'HD';
+            badges.appendChild(hd);
         }
-
-        function loadChannel(channel) {
-            if (!channel || !channel.player_url) return;
-            
-            currentChannel = channel;
-            const container = document.getElementById('display-area');
-            const placeholder = document.getElementById('placeholder');
-            
-            placeholder.classList.add('hidden');
-            container.classList.remove('hidden');
-            document.getElementById('placeholder-text').textContent = channel.name;
-            
-            const frame = document.createElement('iframe');
-            frame.src = channel.player_url;
-            frame.className = "w-full h-full rounded-xl border-0 bg-black";
-            frame.setAttribute("allowfullscreen", "true");
-            frame.setAttribute("allow", "autoplay; fullscreen; picture-in-picture; encrypted-media");
-            frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-presentation");
-            
-            container.innerHTML = "";
-            container.appendChild(frame);
-            
-            updateActiveChannel(channel.slug);
-            
-            if (window.innerWidth < 768) {
-                togglePanel();
-            }
+        
+        if (channel.category && channel.category !== 'IPTV') {
+            const cat = document.createElement('span');
+            cat.className = `channel-badge ${getCategoryBadge(channel.category)}`;
+            cat.textContent = channel.category;
+            badges.appendChild(cat);
         }
+        
+        div.appendChild(num);
+        div.appendChild(nameSpan);
+        div.appendChild(badges);
+        
+        div.addEventListener('click', () => loadChannel(channel));
+        list.appendChild(div);
+    });
+    
+    document.getElementById('channel-counter').textContent = sorted.length;
+    document.getElementById('total-french-channels').textContent = sorted.length;
+}
 
-        function resetPlayer() {
-            const container = document.getElementById('display-area');
-            const placeholder = document.getElementById('placeholder');
-            
-            container.innerHTML = '';
-            container.classList.add('hidden');
-            placeholder.classList.remove('hidden');
-            document.getElementById('placeholder-text').textContent = 'Sélectionnez une chaîne française';
-            currentChannel = null;
-            document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
+function initApp() {
+    allChannels = getFrenchChannels(FULL_DATA);
+    renderChannels();
+    
+    // Charge une chaîne si passée en paramètre URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const slug = urlParams.get('channel');
+    if (slug) {
+        const found = allChannels.find(c => c.slug === slug);
+        if (found) setTimeout(() => loadChannel(found), 500);
+    }
+}
+
+// ============================================================
+// 6. RACCOURCI CLAVIER
+// ============================================================
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const panel = document.getElementById('sidePanel');
+        if (panel && !panel.classList.contains('translate-x-full')) {
+            togglePanel();
         }
+    }
+});
 
-        function updateActiveChannel(slug) {
-            document.querySelectorAll('.channel-item').forEach(el => {
-                el.classList.toggle('active', el.dataset.slug === slug);
-            });
-        }
-
-        function filterChannels(query) {
-            const q = query.toLowerCase().trim();
-            const items = document.querySelectorAll('.channel-item');
-            let visibleCount = 0;
-            
-            items.forEach(item => {
-                const name = item.dataset.name.toLowerCase();
-                const category = (item.dataset.category || '').toLowerCase();
-                const match = name.includes(q) || category.includes(q);
-                item.style.display = match ? 'flex' : 'none';
-                if (match) visibleCount++;
-            });
-            
-            document.getElementById('channel-counter').textContent = visibleCount + ' chaînes visibles';
-        }
-
-        function getCategoryBadge(category) {
-            const badges = {
-                'IPTV': 'bg-gray-600/30 text-gray-300',
-                'Sport': 'bg-green-600/30 text-green-400',
-                'Info': 'bg-blue-600/30 text-blue-400',
-                'Divertissement': 'bg-purple-600/30 text-purple-400',
-                'Cinéma': 'bg-red-600/30 text-red-400',
-                'Séries-Films': 'bg-pink-600/30 text-pink-400',
-                'Documentaires': 'bg-orange-600/30 text-orange-400',
-                'Jeunesse': 'bg-yellow-600/30 text-yellow-400',
-                'Musique': 'bg-indigo-600/30 text-indigo-400',
-                'Culture': 'bg-teal-600/30 text-teal-400',
-                'Art de vivre': 'bg-emerald-600/30 text-emerald-400',
-                'Régional': 'bg-cyan-600/30 text-cyan-400',
-                'Local': 'bg-sky-600/30 text-sky-400',
-                'Nature': 'bg-lime-600/30 text-lime-400',
-                'Reportages': 'bg-amber-600/30 text-amber-400',
-                'Voyage': 'bg-fuchsia-600/30 text-fuchsia-400',
-                'Sociétal': 'bg-rose-600/30 text-rose-400',
-                'Economie': 'bg-slate-600/30 text-slate-400',
-                'Archives': 'bg-zinc-600/30 text-zinc-400',
-                'Sciences': 'bg-cyan-700/30 text-cyan-300'
-            };
-            return badges[category] || 'bg-gray-700/30 text-gray-400';
-        }
-
-        function renderChannels() {
-            const list = document.getElementById('channelsList');
-            list.innerHTML = '';
-            
-            // Trier : d'abord les HD/FHD, puis alphabétique
-            const sorted = [...allChannels].sort((a, b) => {
-                const aHD = a.name.includes('HD') || a.name.includes('FHD');
-                const bHD = b.name.includes('HD') || b.name.includes('FHD');
-                if (aHD && !bHD) return -1;
-                if (!aHD && bHD) return 1;
-                return a.name.localeCompare(b.name);
-            });
-            
-            sorted.forEach((channel, index) => {
-                const div = document.createElement('div');
-                div.className = 'channel-item flex items-center gap-2 px-3 py-2 rounded-lg text-sm';
-                div.dataset.slug = channel.slug;
-                div.dataset.name = channel.name;
-                div.dataset.category = channel.category || '';
-                
-                const num = document.createElement('span');
-                num.className = 'text-xs text-gray-500 w-5 text-right flex-shrink-0';
-                num.textContent = index + 1;
-                
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'flex-1 truncate';
-                nameSpan.textContent = channel.name;
-                
-                const badges = document.createElement('span');
-                badges.className = 'flex items-center gap-1 flex-shrink-0';
-                
-                // Badge HD si présent
-                if (channel.name.includes('HD') || channel.name.includes('FHD')) {
-                    const hd = document.createElement('span');
-                    hd.className = 'channel-badge bg-blue-500/20 text-blue-400';
-                    hd.textContent = channel.name.includes('FHD') ? 'FHD' : 'HD';
-                    badges.appendChild(hd);
-                }
-                
-                // Badge catégorie
-                if (channel.category && channel.category !== 'IPTV') {
-                    const cat = document.createElement('span');
-                    cat.className = `channel-badge ${getCategoryBadge(channel.category)}`;
-                    cat.textContent = channel.category;
-                    badges.appendChild(cat);
-                }
-                
-                div.appendChild(num);
-                div.appendChild(nameSpan);
-                div.appendChild(badges);
-                
-                div.addEventListener('click', () => loadChannel(channel));
-                list.appendChild(div);
-            });
-            
-            document.getElementById('channel-counter').textContent = sorted.length + ' chaînes';
-            document.getElementById('total-french-channels').textContent = sorted.length;
-        }
-
-        // ============================================================
-        // 5. INITIALISATION
-        // ============================================================
-        document.addEventListener('DOMContentLoaded', () => {
-            renderChannels();
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const slug = urlParams.get('channel');
-            if (slug) {
-                const found = allChannels.find(c => c.slug === slug);
-                if (found) {
-                    setTimeout(() => loadChannel(found), 500);
-                }
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                const panel = document.getElementById('sidePanel');
-                if (!panel.classList.contains('translate-x-full')) {
-                    togglePanel();
-                }
-            }
-        });
-    </script>
+// ============================================================
+// 7. INITIALISATION
+// ============================================================
+// Le PIN est déjà affiché, l'app ne se lance qu'après validation
+</script>
 
 </body>
 </html>
