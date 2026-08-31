@@ -59,7 +59,18 @@
             const src = input.includes('<iframe') ? (input.match(/src=["']([^"']+)["']/)||[])[1] : input;
             const container = document.getElementById('display-area');
             document.getElementById('placeholder').style.display = 'none';
-            container.innerHTML = `<iframe src="${src}" class="w-full h-full" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+
+            // Création propre avec règles de sandbox anti-popups et anti-redirections
+            const frame = document.createElement('iframe');
+            frame.src = src;
+            frame.className = "w-full h-full";
+            frame.setAttribute("allowfullscreen", "true");
+            frame.setAttribute("allow", "autoplay; fullscreen; picture-in-picture; encrypted-media");
+            frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-presentation");
+
+            container.innerHTML = "";
+            container.appendChild(frame);
+
             document.getElementById('status').innerText = "Live";
             togglePanel();
         }
