@@ -12691,7 +12691,6 @@ function loadChannel(channel) {
     
     const source = SOURCES[currentSource];
     
-    // 🔥 Construire l'URL : pour CDNLive on utilise formatUrl, sinon l'URL du JSON
     let url;
     if (currentSource === 'cdnlive' && source.formatUrl) {
         url = source.formatUrl(channel);
@@ -12717,8 +12716,13 @@ function loadChannel(channel) {
     frame.setAttribute("allow", "encrypted-media; autoplay; fullscreen; picture-in-picture");
     frame.setAttribute("scrolling", "no");
     frame.setAttribute("frameborder", "0");
-    frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-presentation allow-popups");
     frame.setAttribute("loading", "lazy");
+    
+    // 🔥 SANDBOX : UNIQUEMENT pour Northlive, PAS pour CDNLive
+    if (currentSource === 'northlive') {
+        frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-presentation");
+    }
+    // CDNLive : PAS de sandbox (plus permissif)
     
     container.innerHTML = "";
     container.appendChild(frame);
